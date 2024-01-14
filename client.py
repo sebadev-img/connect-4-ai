@@ -1,0 +1,90 @@
+import sys
+import time
+import random
+import json
+import asyncio
+import websockets
+
+async def send(websocket, action, data):
+    message = json.dumps(
+        {
+            'action': action,
+            'data': data,
+        }
+    )
+    await websocket.send(message)
+
+
+async def start(auth_token):
+    uri = "ws://codechallenge-server-f4118f8ea054.herokuapp.com/ws?token={}".format(auth_token)
+    while True:
+        try:
+            print('connection to {}'.format(uri))
+            async with websockets.connect(uri) as websocket:
+                print('connection READY!')
+                await play(websocket)
+        except KeyboardInterrupt:
+            print('Exiting...')
+            break
+        except Exception:
+            print('connection error!')
+            time.sleep(3)
+
+async def play(websocket):
+    while True:
+        try:
+            response = await websocket.recv()
+            print(f"< {response}")
+            response_data = json.loads(response)
+            print(f"response data: {response_data}")
+            if response_data['event'] == 'update_user_list':
+                pass
+            if response_data['event'] == 'game_over':
+                board = response_data['data']['board']
+                print(board)
+            if response_data['event'] == 'challenge':
+                await send(
+                    websocket,
+                    'accept_challenge',
+                    {
+                        'challenge_id': response_data['data']['challenge_id'],
+                    },
+                )
+            if response_data['event'] == 'your_turn':
+                await process_your_turn(websocket, response_data)
+        except KeyboardInterrupt:
+            print('Exiting...')
+            break
+        except Exception as e:
+            print('error {}'.format(str(e)))
+            break  # force login again
+
+async def process_your_turn(websocket, response_data):
+    await process_move(websocket, response_data)
+
+
+async def process_move(websocket, response_data):
+    side = response_data['data']['side']
+    board = response_data['data']['board']
+    colums = board.find('|', 1) - 1
+    print(board)
+    await send(
+        websocket,
+        'move',
+        {
+            'game_id': response_data['data']['game_id'],
+            'turn_token': response_data['data']['turn_token'],
+            'col': random.randint(0, colums),
+        },
+    )
+
+ 
+
+
+if __name__ == '__main__':
+    if len(sys.argv) >= 2:
+        auth_token = sys.argv[1]
+        print(f"AI started with token id: {auth_token}")
+        asyncio.run(start(auth_token))       
+    else:
+        print('please provide your auth_token')
