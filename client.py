@@ -5,6 +5,9 @@ import json
 import asyncio
 import websockets
 
+import connect4
+import score_ai
+
 async def send(websocket, action, data):
     message = json.dumps(
         {
@@ -51,7 +54,8 @@ async def play(websocket):
                     },
                 )
             if response_data['event'] == 'your_turn':
-                await process_your_turn(websocket, response_data)
+                #await process_your_turn(websocket, response_data)
+                asyncio.create_task(process_your_turn(websocket, response_data))
         except KeyboardInterrupt:
             print('Exiting...')
             break
@@ -65,16 +69,18 @@ async def process_your_turn(websocket, response_data):
 
 async def process_move(websocket, response_data):
     side = response_data['data']['side']
-    board = response_data['data']['board']
-    colums = board.find('|', 1) - 1
-    print(board)
+    piece = connect4.get_piece_from_side(side)
+    string_board = response_data['data']['board']
+    board = connect4.create_board_from_string(string_board)
+    col = score_ai.get_move(board,piece)
+    print(string_board)
     await send(
         websocket,
         'move',
         {
             'game_id': response_data['data']['game_id'],
             'turn_token': response_data['data']['turn_token'],
-            'col': random.randint(0, colums),
+            'col': col,
         },
     )
 
