@@ -18,6 +18,12 @@ def get_row_count(board):
 def get_column_count(board):
     return board.shape[1]
 
+def get_piece_from_side(side):
+    if side == "N":
+        return NORTH_PIECE
+    else: # side == "S"
+        return SOUTH_PIECE
+
 def is_valid_column_location(board, col):
     row_count = get_row_count(board)
     return board[row_count-1,col] == 0
