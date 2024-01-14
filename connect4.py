@@ -36,6 +36,9 @@ def get_next_open_row(board,col):
         if board[row][col] == 0:
             return row
         
+def drop_piece(board,row,col,piece):
+    board[row,col] = piece
+        
 def is_winning_move(board,piece):
     row_count = get_row_count(board)
     column_count = get_column_count(board)            
