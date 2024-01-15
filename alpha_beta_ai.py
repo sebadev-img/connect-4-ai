@@ -108,8 +108,20 @@ def alpha_beta(board,depth,alpha,beta,maximizingPlayer,my_piece):
                 break
         return  best_col,value
 
+def calculate_depth(board):
+    row_count = connect4.get_row_count(board)
+    column_count = connect4.get_column_count(board)
+    if row_count <= 6 and column_count <= 7:
+        return 6
+    elif row_count <= 8 and column_count <= 9:
+        return 5
+    elif row_count <= 11 and column_count <= 12:
+        return 4
+    else:
+        return 3
+
 def get_move(board,my_piece):
     alpha = -math.inf
     beta = math.inf
-    depth = 3
+    depth = calculate_depth(board)
     return alpha_beta(board,depth,alpha,beta,True,my_piece)[0]
