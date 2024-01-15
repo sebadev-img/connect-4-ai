@@ -24,7 +24,7 @@ def evaluate_window(window,piece):
     elif window.count(piece) == 2 and window.count(EMPTY) == 2:
         score += 2
     if window.count(opponent) == 3 and window.count(EMPTY) == 1:
-        score -= 4
+        score -= 80
     return score
 
 def score_position(board,piece):
