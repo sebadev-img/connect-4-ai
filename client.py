@@ -7,6 +7,7 @@ import websockets
 
 import connect4
 import score_ai
+import alpha_beta_ai
 
 async def send(websocket, action, data):
     message = json.dumps(
@@ -18,14 +19,14 @@ async def send(websocket, action, data):
     await websocket.send(message)
 
 
-async def start(auth_token):
+async def start(auth_token,ai_name):
     uri = "ws://codechallenge-server-f4118f8ea054.herokuapp.com/ws?token={}".format(auth_token)
     while True:
         try:
             print('connection to {}'.format(uri))
             async with websockets.connect(uri) as websocket:
                 print('connection READY!')
-                await play(websocket)
+                await play(websocket,ai_name)
         except KeyboardInterrupt:
             print('Exiting...')
             break
@@ -33,7 +34,7 @@ async def start(auth_token):
             print('connection error!')
             time.sleep(3)
 
-async def play(websocket):
+async def play(websocket,ai_name):
     while True:
         try:
             response = await websocket.recv()
@@ -55,7 +56,7 @@ async def play(websocket):
                 )
             if response_data['event'] == 'your_turn':
                 #await process_your_turn(websocket, response_data)
-                asyncio.create_task(process_your_turn(websocket, response_data))
+                asyncio.create_task(process_your_turn(websocket,ai_name,response_data))
         except KeyboardInterrupt:
             print('Exiting...')
             break
@@ -63,16 +64,24 @@ async def play(websocket):
             print('error {}'.format(str(e)))
             break  # force login again
 
-async def process_your_turn(websocket, response_data):
-    await process_move(websocket, response_data)
+async def process_your_turn(websocket,ai_name,response_data):
+    await process_move(websocket,ai_name, response_data)
 
 
-async def process_move(websocket, response_data):
+def get_ai_move(ai_name,board,piece):
+    if ai_name == "score":
+        return score_ai.get_move(board,piece)
+    elif ai_name == "alphabeta":
+        return alpha_beta_ai.get_move(board,piece)
+    pass
+
+
+async def process_move(websocket,ai_name,response_data):
     side = response_data['data']['side']
     piece = connect4.get_piece_from_side(side)
     string_board = response_data['data']['board']
     board = connect4.create_board_from_string(string_board)
-    col = score_ai.get_move(board,piece)
+    col = get_ai_move(ai_name,board)
     print(string_board)
     await send(
         websocket,
@@ -90,7 +99,8 @@ async def process_move(websocket, response_data):
 if __name__ == '__main__':
     if len(sys.argv) >= 2:
         auth_token = sys.argv[1]
-        print(f"AI started with token id: {auth_token}")
-        asyncio.run(start(auth_token))       
+        ai_name = sys.argv[2]
+        print(f"AI {ai_name} started with token id: {auth_token}")
+        asyncio.run(start(auth_token,ai_name))       
     else:
         print('please provide your auth_token')
