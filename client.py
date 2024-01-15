@@ -81,7 +81,7 @@ async def process_move(websocket,ai_name,response_data):
     piece = connect4.get_piece_from_side(side)
     string_board = response_data['data']['board']
     board = connect4.create_board_from_string(string_board)
-    col = get_ai_move(ai_name,board)
+    col = get_ai_move(ai_name,board,piece)
     print(string_board)
     await send(
         websocket,
