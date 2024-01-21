@@ -42,8 +42,44 @@ def get_next_open_row(board,col):
         if board[row][col] == 0:
             return row
         
+def get_reverse_row(board,row):
+    row_count = get_row_count(board)
+    return (row_count -1) - row
+
 def drop_piece(board,row,col,piece):
     board[row,col] = piece
+
+def kill_row(board,row):
+    row_count = get_row_count(board)
+    if row_count > 6:
+        return delete_row(board,row)
+    else:
+        return set_row_to_zero(board,row)        
+
+def kill_column(board,column):
+    column_count = get_column_count(board)
+    if column_count > 7:
+        return delete_column(board,column)
+    else:
+        return set_col_to_zero(board,column)
+
+def delete_row(board,row):
+    new_board = np.delete(board,row,axis=0)
+    return new_board  
+
+def delete_column(board,col): 
+    new_board =np.delete(board,col,axis=1)
+    return new_board    
+
+def set_col_to_zero(board,col):  
+    board[:,col] = 0
+    return board    
+
+def set_row_to_zero(board,row):
+    board = np.delete(board, row, axis=0)
+    row_of_zeros = np.zeros((1, board.shape[1]), dtype=board.dtype)
+    board = np.vstack((board, row_of_zeros))
+    return board
         
 def is_winning_move(board,piece):
     row_count = get_row_count(board)
