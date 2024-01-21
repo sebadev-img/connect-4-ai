@@ -29,7 +29,7 @@ def simulate_drop_piece(board,depth,alpha,beta,my_piece,opponent_piece,best_col,
             else:
                 connect4.drop_piece(temp_board,row,col,opponent_piece)
                 new_score = alpha_beta(temp_board,depth-1,alpha,beta,True,my_piece)[1]
-                if new_score > value:
+                if new_score < value:
                     value = new_score
                     best_col = col
                 beta = min(beta,value)
