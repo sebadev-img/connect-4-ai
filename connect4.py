@@ -80,27 +80,43 @@ def set_row_to_zero(board,row):
     row_of_zeros = np.zeros((1, board.shape[1]), dtype=board.dtype)
     board = np.vstack((board, row_of_zeros))
     return board
+
+def get_not_empty_rows_index(board):
+    rows_with_all_zeros = np.all(board == 0, axis=1)
+    not_empty_rows = np.where(~rows_with_all_zeros)[0]
+    return not_empty_rows
+
+def get_not_empty_columns_index(board):
+    columns_with_all_zeros = np.all(board == 0, axis=0)
+    not_empty_columns = np.where(~columns_with_all_zeros)[0]
+    return not_empty_columns
         
 def is_winning_move(board,piece):
     row_count = get_row_count(board)
     column_count = get_column_count(board)            
-    #Check horizontal
-    for c in range(column_count-3):
-        for r in range(row_count):
-            if board[r][c] == piece and board[r][c+1] == piece and board[r][c+2] == piece and board[r][c+3] == piece:
-                return True
-    #Check vertical
-    for c in range(column_count):
-        for r in range(row_count-3):
-            if board[r][c] == piece and board[r+1][c] == piece and board[r+2][c] == piece and board[r+3][c] == piece:
-                return True
+    #Check horizontal if not empty
+    not_empty_rows = get_not_empty_rows_index(board)
+    if len(not_empty_rows > 0):
+        for r in not_empty_rows:
+            for c in range(column_count-3):
+                if board[r][c] == piece and board[r][c+1] == piece and board[r][c+2] == piece and board[r][c+3] == piece:
+                    return True
+    #Check vertical if not empty
+    not_empty_columns = get_not_empty_columns_index(board)
+    if len(not_empty_columns) > 0:
+        for c in not_empty_columns:
+            for r in range(row_count-3):
+                if board[r][c] == piece and board[r+1][c] == piece and board[r+2][c] == piece and board[r+3][c] == piece:
+                    return True
+    #Check diagonals if not empty row count > 3
+    if len(not_empty_rows) > 3:
     #Check postivily sloped diagonal
-    for c in range(column_count-3):
-        for r in range(row_count-3):
-            if board[r][c] == piece and board[r+1][c+1] == piece and board[r+2][c+2] == piece and board[r+3][c+3] == piece:
-                return True
-    #Check negativily sloped diagonal
-    for c in range(column_count-3):
-        for r in range(3, row_count):
-            if board[r][c] == piece and board[r-1][c+1] == piece and board[r-2][c+2] == piece and board[r-3][c+3] == piece:
-                return True
+        for c in range(column_count-3):
+            for r in range(row_count-3):
+                if board[r][c] == piece and board[r+1][c+1] == piece and board[r+2][c+2] == piece and board[r+3][c+3] == piece:
+                    return True
+        #Check negativily sloped diagonal
+        for c in range(column_count-3):
+            for r in range(3, row_count):
+                if board[r][c] == piece and board[r-1][c+1] == piece and board[r-2][c+2] == piece and board[r-3][c+3] == piece:
+                    return True
