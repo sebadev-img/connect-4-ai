@@ -19,7 +19,7 @@ def simulate_drop_piece(board,depth,alpha,beta,my_piece,opponent_piece,best_col,
             temp_board = board.copy()
             if is_my_turn:
                 connect4.drop_piece(temp_board,row,col,my_piece)
-                new_score = alpha_beta(temp_board,depth-1,alpha,beta,False,my_piece)[1]
+                new_score = alpha_beta(temp_board,depth-1,alpha,beta,False,my_piece)[3]
                 if new_score > value:
                     value = new_score
                     best_col = col
@@ -28,7 +28,7 @@ def simulate_drop_piece(board,depth,alpha,beta,my_piece,opponent_piece,best_col,
                     break
             else:
                 connect4.drop_piece(temp_board,row,col,opponent_piece)
-                new_score = alpha_beta(temp_board,depth-1,alpha,beta,True,my_piece)[1]
+                new_score = alpha_beta(temp_board,depth-1,alpha,beta,True,my_piece)[3]
                 if new_score < value:
                     value = new_score
                     best_col = col
@@ -36,6 +36,54 @@ def simulate_drop_piece(board,depth,alpha,beta,my_piece,opponent_piece,best_col,
                 if alpha >= beta:
                     break                
     return best_col,value
+
+def simulate_kill_row(board,depth,alpha,beta,my_piece,best_kill_row,value,is_my_turn):
+    row_count = connect4.get_row_count(board)
+    for row in range(row_count):
+        temp_board = board.copy()
+        if is_my_turn:
+            temp_board = connect4.kill_row(temp_board,row)
+            new_score = alpha_beta(temp_board,depth-1,alpha,beta,False,my_piece)[3]
+            if new_score > value:
+                    value = new_score
+                    best_kill_row = row
+            alpha = max(alpha,value)
+            if alpha >= beta:
+                break
+        else:
+            temp_board = connect4.kill_row(temp_board,row)
+            new_score = alpha_beta(temp_board,depth-1,alpha,beta,True,my_piece)[3]
+            if new_score < value:
+                    value = new_score
+                    best_kill_row = row
+            beta = min(beta,value)
+            if alpha >= beta:
+                break 
+    return best_kill_row,value
+
+def simulate_kill_col(board,depth,alpha,beta,my_piece,best_kill_col,value,is_my_turn):
+    col_count = connect4.get_column_count(board)
+    for col in range(col_count):
+        temp_board = board.copy()
+        if is_my_turn:
+            temp_board = connect4.kill_col(temp_board,col)
+            new_score = alpha_beta(temp_board,depth-1,alpha,beta,False,my_piece)[3]
+            if new_score > value:
+                    value = new_score
+                    best_kill_col = col
+            alpha = max(alpha,value)
+            if alpha >= beta:
+                break
+        else:
+            temp_board = connect4.kill_col(temp_board,col)
+            new_score = alpha_beta(temp_board,depth-1,alpha,beta,True,my_piece)[3]
+            if new_score < value:
+                    value = new_score
+                    best_kill_col = col
+            beta = min(beta,value)
+            if alpha >= beta:
+                break   
+    return best_kill_col,value
 
 
 def alpha_beta(board,depth,alpha,beta,maximizingPlayer,my_piece):
@@ -46,24 +94,44 @@ def alpha_beta(board,depth,alpha,beta,maximizingPlayer,my_piece):
     is_termial = is_terminal_node(board)
     if depth == 0 or is_termial:
         if is_termial:
-            if connect4.is_winning_move(board,my_piece):
-                return (None, 1000000)
-            if connect4.is_winning_move(board, opponent_piece):
+            if connect4.is_winning_move(board,my_piece) and not connect4.is_winning_move(board,opponent_piece):
+                return (None,None,None, 1000000)
+            if connect4.is_winning_move(board, opponent_piece) and not connect4.is_winning_move(board,my_piece):
                 return (None, -1000000)
             else: # Game over, no more pieces
                 return (None, 0)
         else: #Depth is zero
-            return (None, score_system.get_board_score(board,my_piece))
+            return (None,None,None, score_system.get_board_score(board,my_piece))
     if maximizingPlayer:
         value = -math.inf
-        best_col = None
-        best_col,value = simulate_drop_piece(board,depth,alpha,beta,my_piece,opponent_piece,best_col,value,is_my_turn=True)
-        return best_col,value
+        drop_col = None
+        best_kill_row = None
+        best_kill_col = None
+        drop_col,drop_col_value = simulate_drop_piece(board,depth,alpha,beta,my_piece,opponent_piece,drop_col,value,is_my_turn=True)
+        best_kill_row,best_kill_row_value = simulate_kill_row(board,depth,alpha,beta,my_piece,best_kill_row,value,is_my_turn=True)
+        best_kill_col,best_kill_col_value = simulate_kill_col(board,depth,alpha,beta,my_piece,best_kill_col,value,is_my_turn=True)
+        value_list = [drop_col_value,best_kill_row_value,best_kill_col_value]
+        if max(value_list) == drop_col_value:
+            return drop_col,None,None,drop_col_value
+        elif max(value_list) == best_kill_row_value:
+            return None,best_kill_row,None,best_kill_row_value
+        else:
+            return None,None,best_kill_col,best_kill_col_value
     else: #minPlayer
         value = math.inf
-        best_col = None
-        best_col,value = simulate_drop_piece(board,depth,alpha,beta,my_piece,opponent_piece,best_col,value,is_my_turn=False)            
-        return  best_col,value
+        drop_col = None
+        best_kill_row = None
+        best_kill_col = None
+        drop_col,drop_col_value = simulate_drop_piece(board,depth,alpha,beta,my_piece,opponent_piece,drop_col,value,is_my_turn=False)
+        best_kill_row,best_kill_row_value = simulate_kill_row(board,depth,alpha,beta,my_piece,best_kill_row,value,is_my_turn=False)
+        best_kill_col,best_kill_col_value = simulate_kill_col(board,depth,alpha,beta,my_piece,best_kill_col,value,is_my_turn=False)
+        value_list = [drop_col_value,best_kill_row_value,best_kill_col_value]
+        if max(value_list) == drop_col_value:
+            return drop_col,None,None,drop_col_value
+        elif max(value_list) == best_kill_row_value:
+            return None,best_kill_row,None,best_kill_row_value
+        else:
+            return None,None,best_kill_col,best_kill_col_value
 
 def calculate_depth(board):
     row_count = connect4.get_row_count(board)
@@ -81,4 +149,4 @@ def get_move(board,my_piece):
     alpha = -math.inf
     beta = math.inf
     depth = calculate_depth(board)
-    return alpha_beta(board,depth,alpha,beta,True,my_piece)[0]
+    return alpha_beta(board,depth,alpha,beta,True,my_piece)
