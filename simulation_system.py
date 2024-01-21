@@ -15,3 +15,29 @@ def get_best_col(board,piece):
             best_score = score
             best_col = col
     return best_col,best_score
+
+def get_best_kill_row(board,piece):
+    row_count = connect4.get_row_count(board)
+    best_score = -100000
+    best_kill_row = random.randint(0,row_count-1)
+    for row in range(row_count):
+        temp_board = board.copy()
+        temp_board = connect4.kill_row(temp_board,row) 
+        score = score_system.get_board_score(temp_board,piece)
+        if (score > best_score):
+            best_score = score
+            best_kill_row = row
+    return best_kill_row,best_score
+
+def get_best_kill_col(board,piece):
+    column_count = connect4.get_column_count(board)
+    best_score = -100000
+    best_kill_col = random.randint(0,column_count-1)
+    for col in range(column_count):
+        temp_board = board.copy()
+        temp_board = connect4.kill_column(temp_board,col)
+        score = score_system.get_board_score(temp_board,piece)
+        if (score > best_score):
+            best_score = score
+            best_kill_col = col
+    return best_kill_col,best_score
