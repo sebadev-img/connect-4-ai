@@ -6,7 +6,7 @@ import asyncio
 import websockets
 
 import connect4
-import score_ai
+import simple_ai
 import alpha_beta_ai
 
 async def send(websocket, action, data):
@@ -69,8 +69,8 @@ async def process_your_turn(websocket,ai_name,response_data):
 
 
 def get_ai_move(ai_name,board,piece):
-    if ai_name == "score":
-        return score_ai.get_move(board,piece)
+    if ai_name == "simple":
+        return simple_ai.get_move(board,piece)
     elif ai_name == "alphabeta":
         return alpha_beta_ai.get_move(board,piece)
     pass
