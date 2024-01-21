@@ -65,24 +65,31 @@ async def play(websocket,ai_name):
             break  # force login again
 
 async def process_your_turn(websocket,ai_name,response_data):
-    await process_move(websocket,ai_name, response_data)
+    side = response_data['data']['side']
+    piece = connect4.get_piece_from_side(side)
+    string_board = response_data['data']['board']
+    board = connect4.create_board_from_string(string_board)
+    drop_col,kill_row,kill_col = get_ai_move(ai_name,board,piece)
+    print(string_board)
+    if drop_col is not None:    
+        await process_move(websocket,response_data,drop_col)
+    elif kill_row is not None:
+        kill_row = connect4.get_reverse_row(board,kill_row)
+        await process_kill_row(websocket,response_data,kill_row)
+    elif kill_col is not None:
+        await process_kill_col(websocket,response_data,kill_col)
 
 
 def get_ai_move(ai_name,board,piece):
     if ai_name == "simple":
         return simple_ai.get_move(board,piece)
     elif ai_name == "alphabeta":
-        return alpha_beta_ai.get_move(board,piece)
+        best_col = alpha_beta_ai.get_move(board,piece)
+        return best_col,None,None
     pass
 
 
-async def process_move(websocket,ai_name,response_data):
-    side = response_data['data']['side']
-    piece = connect4.get_piece_from_side(side)
-    string_board = response_data['data']['board']
-    board = connect4.create_board_from_string(string_board)
-    col = get_ai_move(ai_name,board,piece)
-    print(string_board)
+async def process_move(websocket,response_data,col):     
     await send(
         websocket,
         'move',
@@ -93,6 +100,27 @@ async def process_move(websocket,ai_name,response_data):
         },
     )
 
+async def process_kill_col(websocket, request_data,col):
+    await send(
+        websocket,
+        'kill',
+        {
+            'game_id': request_data['data']['game_id'],
+            'turn_token': request_data['data']['turn_token'],
+            'col': col
+        },
+    )
+
+async def process_kill_row(websocket, request_data,row):
+    await send(
+        websocket,
+        'kill',
+        {
+            'game_id': request_data['data']['game_id'],
+            'turn_token': request_data['data']['turn_token'],
+            'row': row
+        },
+    )
  
 
 
