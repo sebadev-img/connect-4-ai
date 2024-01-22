@@ -104,6 +104,8 @@ def alpha_beta(board,depth,alpha,beta,maximizingPlayer,my_piece):
                 return (None,None,None, 1000000)
             if connect4.is_winning_move(board, opponent_piece) and not connect4.is_winning_move(board,my_piece):
                 return (None,None,None, -1000000)
+            if connect4.is_winning_move(board,my_piece) and connect4.is_winning_move(board,opponent_piece):
+                return (None,None,None,score_system.get_board_score(board,my_piece))
             else: # Game over, no more pieces
                 return (None,None,None, 0)
         else: #Depth is zero
