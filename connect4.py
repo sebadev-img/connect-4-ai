@@ -44,7 +44,8 @@ def get_next_open_row(board,col):
         
 def get_reverse_row(board,row):
     row_count = get_row_count(board)
-    return (row_count -1) - row
+    reverse_row = int((row_count -1) - row)
+    return reverse_row
 
 def drop_piece(board,row,col,piece):
     board[row,col] = piece
