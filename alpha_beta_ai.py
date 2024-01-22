@@ -72,7 +72,7 @@ def simulate_kill_col(board,depth,alpha,beta,my_piece,best_kill_col,value,is_my_
         for col in not_empty_columns:
             temp_board = board.copy()
             if is_my_turn:
-                temp_board = connect4.kill_col(temp_board,col)
+                temp_board = connect4.kill_column(temp_board,col)
                 new_score = alpha_beta(temp_board,depth-1,alpha,beta,False,my_piece)[3]
                 if new_score > value:
                         value = new_score
