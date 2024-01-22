@@ -71,12 +71,14 @@ async def process_your_turn(websocket,ai_name,response_data):
     board = connect4.create_board_from_string(string_board)
     drop_col,kill_row,kill_col = get_ai_move(ai_name,board,piece)
     print(string_board)
-    if drop_col is not None:    
+    if drop_col is not None: 
+        drop_col = int(drop_col)   
         await process_move(websocket,response_data,drop_col)
     elif kill_row is not None:
         kill_row = connect4.get_reverse_row(board,kill_row)
         await process_kill_row(websocket,response_data,kill_row)
     elif kill_col is not None:
+        kill_col = int(kill_col)
         await process_kill_col(websocket,response_data,kill_col)
 
 
