@@ -34,7 +34,7 @@ def simulate_drop_piece(board,depth,alpha,beta,my_piece,opponent_piece,best_col,
                     best_col = col
                 beta = min(beta,value)
                 if alpha >= beta:
-                    break                
+                    break                                
     return best_col,value
 
 def simulate_kill_row(board,depth,alpha,beta,my_piece,best_kill_row,value,is_my_turn):
@@ -81,7 +81,7 @@ def simulate_kill_col(board,depth,alpha,beta,my_piece,best_kill_col,value,is_my_
                 if alpha >= beta:
                     break
             else:
-                temp_board = connect4.kill_col(temp_board,col)
+                temp_board = connect4.kill_column(temp_board,col)
                 new_score = alpha_beta(temp_board,depth-1,alpha,beta,True,my_piece)[3]
                 if new_score < value:
                         value = new_score
@@ -103,9 +103,9 @@ def alpha_beta(board,depth,alpha,beta,maximizingPlayer,my_piece):
             if connect4.is_winning_move(board,my_piece) and not connect4.is_winning_move(board,opponent_piece):
                 return (None,None,None, 1000000)
             if connect4.is_winning_move(board, opponent_piece) and not connect4.is_winning_move(board,my_piece):
-                return (None, -1000000)
+                return (None,None,None, -1000000)
             else: # Game over, no more pieces
-                return (None, 0)
+                return (None,None,None, 0)
         else: #Depth is zero
             return (None,None,None, score_system.get_board_score(board,my_piece))
     if maximizingPlayer:
@@ -132,9 +132,9 @@ def alpha_beta(board,depth,alpha,beta,maximizingPlayer,my_piece):
         best_kill_row,best_kill_row_value = simulate_kill_row(board,depth,alpha,beta,my_piece,best_kill_row,value,is_my_turn=False)
         best_kill_col,best_kill_col_value = simulate_kill_col(board,depth,alpha,beta,my_piece,best_kill_col,value,is_my_turn=False)
         value_list = [drop_col_value,best_kill_row_value,best_kill_col_value]
-        if max(value_list) == drop_col_value:
+        if min(value_list) == drop_col_value:
             return drop_col,None,None,drop_col_value
-        elif max(value_list) == best_kill_row_value:
+        elif min(value_list) == best_kill_row_value:
             return None,best_kill_row,None,best_kill_row_value
         else:
             return None,None,best_kill_col,best_kill_col_value
