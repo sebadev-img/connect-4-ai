@@ -39,50 +39,56 @@ def simulate_drop_piece(board,depth,alpha,beta,my_piece,opponent_piece,best_col,
 
 def simulate_kill_row(board,depth,alpha,beta,my_piece,best_kill_row,value,is_my_turn):
     row_count = connect4.get_row_count(board)
-    for row in range(row_count):
-        temp_board = board.copy()
-        if is_my_turn:
-            temp_board = connect4.kill_row(temp_board,row)
-            new_score = alpha_beta(temp_board,depth-1,alpha,beta,False,my_piece)[3]
-            if new_score > value:
-                    value = new_score
-                    best_kill_row = row
-            alpha = max(alpha,value)
-            if alpha >= beta:
-                break
-        else:
-            temp_board = connect4.kill_row(temp_board,row)
-            new_score = alpha_beta(temp_board,depth-1,alpha,beta,True,my_piece)[3]
-            if new_score < value:
-                    value = new_score
-                    best_kill_row = row
-            beta = min(beta,value)
-            if alpha >= beta:
-                break 
+    not_empty_rows = connect4.get_not_empty_rows_index(board)
+    if len(not_empty_rows) > 0:
+        for row in not_empty_rows:
+            temp_board = board.copy()
+            if is_my_turn:
+                temp_board = connect4.kill_row(temp_board,row)
+                new_score = alpha_beta(temp_board,depth-1,alpha,beta,False,my_piece)[3]
+                if new_score > value:
+                        value = new_score
+                        best_kill_row = row
+                alpha = max(alpha,value)
+                if alpha >= beta:
+                    break
+            else:
+                temp_board = connect4.kill_row(temp_board,row)
+                new_score = alpha_beta(temp_board,depth-1,alpha,beta,True,my_piece)[3]
+                if new_score < value:
+                        value = new_score
+                        best_kill_row = row
+                beta = min(beta,value)
+                if alpha >= beta:
+                    break 
     return best_kill_row,value
 
 def simulate_kill_col(board,depth,alpha,beta,my_piece,best_kill_col,value,is_my_turn):
     col_count = connect4.get_column_count(board)
-    for col in range(col_count):
-        temp_board = board.copy()
-        if is_my_turn:
-            temp_board = connect4.kill_col(temp_board,col)
-            new_score = alpha_beta(temp_board,depth-1,alpha,beta,False,my_piece)[3]
-            if new_score > value:
-                    value = new_score
-                    best_kill_col = col
-            alpha = max(alpha,value)
-            if alpha >= beta:
-                break
-        else:
-            temp_board = connect4.kill_col(temp_board,col)
-            new_score = alpha_beta(temp_board,depth-1,alpha,beta,True,my_piece)[3]
-            if new_score < value:
-                    value = new_score
-                    best_kill_col = col
-            beta = min(beta,value)
-            if alpha >= beta:
-                break   
+    not_empty_columns = connect4.get_not_empty_columns_index(board)
+    if len(not_empty_columns) > 0:
+        if col_count > 7:
+            not_empty_columns = list(range(min(not_empty_columns),max(not_empty_columns)+1))
+        for col in not_empty_columns:
+            temp_board = board.copy()
+            if is_my_turn:
+                temp_board = connect4.kill_col(temp_board,col)
+                new_score = alpha_beta(temp_board,depth-1,alpha,beta,False,my_piece)[3]
+                if new_score > value:
+                        value = new_score
+                        best_kill_col = col
+                alpha = max(alpha,value)
+                if alpha >= beta:
+                    break
+            else:
+                temp_board = connect4.kill_col(temp_board,col)
+                new_score = alpha_beta(temp_board,depth-1,alpha,beta,True,my_piece)[3]
+                if new_score < value:
+                        value = new_score
+                        best_kill_col = col
+                beta = min(beta,value)
+                if alpha >= beta:
+                    break   
     return best_kill_col,value
 
 
