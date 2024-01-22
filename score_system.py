@@ -33,17 +33,21 @@ def get_board_score(board,piece):
     center_count = center_array.count(piece)
     score += center_count * 3
     #Score horizontal
-    for r in range(row_count):
-        row_array = [int(i) for i in list(board[r,:])]
-        for c in range(column_count-3):
-            window = row_array[c:c+WINDOW_LENGTH]
-            score += evaluate_window_score(window,piece)
+    not_empty_rows = connect4.get_not_empty_rows_index(board)
+    if len(not_empty_rows) > 0:
+        for r in not_empty_rows:
+            row_array = [int(i) for i in list(board[r,:])]
+            for c in range(column_count-3):
+                window = row_array[c:c+WINDOW_LENGTH]
+                score += evaluate_window_score(window,piece)
     #Score vertical
-    for c in range(column_count):
-        col_array = [int(i) for i in list(board[:,c])]
-        for r in range(row_count-3):
-            window = col_array[r:r+WINDOW_LENGTH]
-            score += evaluate_window_score(window,piece)
+    not_empty_columns = connect4.get_not_empty_columns_index(board)
+    if len(not_empty_columns) > 0:
+        for c in not_empty_columns:
+            col_array = [int(i) for i in list(board[:,c])]
+            for r in range(row_count-3):
+                window = col_array[r:r+WINDOW_LENGTH]
+                score += evaluate_window_score(window,piece)
     #Score positive sloped diagonal
     for r in range(row_count-3):
         for c in range(column_count-3):
