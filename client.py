@@ -84,8 +84,8 @@ def get_ai_move(ai_name,board,piece):
     if ai_name == "simple":
         return simple_ai.get_move(board,piece)
     elif ai_name == "alphabeta":
-        best_col = alpha_beta_ai.get_move(board,piece)
-        return best_col,None,None
+        drop_col,kill_row,kill_col,score = alpha_beta_ai.get_move(board,piece)
+        return drop_col,kill_row,kill_col
     pass
 
 
