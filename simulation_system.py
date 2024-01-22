@@ -36,9 +36,9 @@ def get_best_kill_col(board,piece):
     best_score = -100000
     best_kill_col = random.randint(0,column_count-1)
     not_empty_columns = connect4.get_not_empty_columns_index(board)
-    if column_count > 7:
-        not_empty_columns = list(range(min(not_empty_columns),max(not_empty_columns)+1))
     if len(not_empty_columns > 0):
+        if column_count > 7:
+            not_empty_columns = list(range(min(not_empty_columns),max(not_empty_columns)+1))
         for col in not_empty_columns:
             temp_board = board.copy()
             temp_board = connect4.kill_column(temp_board,col)
