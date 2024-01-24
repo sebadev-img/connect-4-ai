@@ -7,7 +7,7 @@ import websockets
 
 import connect4
 import simple_ai
-import alpha_beta_ai
+import minimax_ai
 
 async def send(websocket, action, data):
     message = json.dumps(
@@ -86,8 +86,8 @@ def get_ai_move(ai_name,board,piece):
     if ai_name == "simple":
         return simple_ai.get_move(board,piece)
     elif ai_name == "alphabeta":
-        drop_col,kill_row,kill_col,score = alpha_beta_ai.get_move(board,piece)
-        return drop_col,kill_row,kill_col
+        drop_col = minimax_ai.get_move(board,piece)
+        return drop_col,None,None
     pass
 
 
