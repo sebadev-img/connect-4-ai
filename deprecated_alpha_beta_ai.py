@@ -119,6 +119,7 @@ def alpha_beta(board,depth,alpha,beta,maximizingPlayer,my_piece):
         best_kill_row,best_kill_row_value = simulate_kill_row(board,depth,alpha,beta,my_piece,best_kill_row,value,is_my_turn=True)
         best_kill_col,best_kill_col_value = simulate_kill_col(board,depth,alpha,beta,my_piece,best_kill_col,value,is_my_turn=True)
         value_list = [drop_col_value,best_kill_row_value,best_kill_col_value]
+        print(f"D: {depth} values: {drop_col_value,best_kill_row_value,best_kill_col_value}")
         if max(value_list) == drop_col_value:
             return drop_col,None,None,drop_col_value
         elif max(value_list) == best_kill_row_value:
