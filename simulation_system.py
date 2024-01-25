@@ -11,7 +11,6 @@ def get_best_col(board,piece):
         temp_board = board.copy()
         connect4.drop_piece(temp_board,row,col,piece)
         score = score_system.get_board_score(temp_board,piece)
-        print(f"dcol: {col} score: {score}")
         if (score > best_score):
             best_score = score
             best_col = col
@@ -27,7 +26,6 @@ def get_best_kill_row(board,piece):
             temp_board = board.copy()
             temp_board = connect4.kill_row(temp_board,row) 
             score = score_system.get_board_score(temp_board,piece)
-            print(f"krow: {row} score: {score}")
             if (score > best_score):
                 best_score = score
                 best_kill_row = row
@@ -45,7 +43,6 @@ def get_best_kill_col(board,piece):
             temp_board = board.copy()
             temp_board = connect4.kill_column(temp_board,col)
             score = score_system.get_board_score(temp_board,piece)
-            print(f"kcol: {col} score: {score}")
             if (score > best_score):
                 best_score = score
                 best_kill_col = col
