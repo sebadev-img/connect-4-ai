@@ -39,6 +39,9 @@ def evaluate_window_5_score(window,piece,col_count,is_horizontal,is_vertical):
                 score -= 80
         if window.count(piece) == 3 and window.count(EMPTY) == 2:
             score += 8
+        if window.count(opponent) == 2 and window.count(EMPTY) == 3:
+            if window[0] == EMPTY and window[-1] == EMPTY:
+                score -= 80
     if is_vertical:
         if window.count(piece) == 4 and window.count(opponent) == 1:
             score += 20
