@@ -118,3 +118,24 @@ def get_full_board_score(board,piece):
     score += get_window_4_score(board,piece)
     score += get_window_5_score(board,piece)
     return score
+
+
+def get_row_score(row_array,column_count,piece):
+    score = 0
+    for c in range(column_count-3):
+                window = row_array[c:c+WINDOW_LENGTH_4]
+                score += evaluate_window_4_score(window,piece)
+    for c in range(column_count-4):
+                window = row_array[c:c+WINDOW_LENGTH_5]
+                score += evaluate_window_5_score(window,piece,column_count,True,False)
+    return score
+
+def get_col_score(col_array,row_count,piece):
+    score = 0
+    for r in range(row_count-3):
+                window = col_array[r:r+WINDOW_LENGTH_4]
+                score += evaluate_window_4_score(window,piece)
+    for r in range(row_count-4):
+                window = col_array[r:r+WINDOW_LENGTH_5]
+                score += evaluate_window_5_score(window,piece,0,False,True)
+    return score
