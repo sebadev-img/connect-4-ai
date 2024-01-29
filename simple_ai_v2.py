@@ -18,7 +18,7 @@ def pick_best_move(board,piece):
         return None,kill_row,None
     else:
         if kill_col_score < 20:
-            kill_col = get_best_col(board,piece)
+            kill_col = get_best_col(board,piece,kill_col)
         return None,None,kill_col
     
 
