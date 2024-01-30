@@ -23,6 +23,8 @@ def evaluate_window_4_score(window,piece):
         score -= 10000
     elif window.count(opponent) == 3 and window.count(EMPTY) == 1:
         score -= 80
+    elif window.count(opponent) == 3 and window.count(piece) == 1:
+         score -=80
     return score
 
 def evaluate_window_5_score(window,piece,col_count,is_horizontal,is_vertical):
