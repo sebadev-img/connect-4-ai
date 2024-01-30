@@ -17,6 +17,10 @@ def pick_best_move(board,piece):
             kill_row = get_best_row(board,piece,kill_row)
         return None,kill_row,None
     else:
+        row_count = connect4.get_row_count(board)
+        print(f"row count: {row_count}")
+        if int(row_count) > 0:
+            return None,0,None
         if kill_col_score < 20:
             kill_col = get_best_col(board,piece,kill_col)
         return None,None,kill_col
